@@ -40,6 +40,7 @@ function createText(text, x, y, z, style) {
     mesh.position.set(x, y, z);
     scene.add(mesh);
 }
+// Edit here ↓↓↓
 createText("🎂 Happy Birthday 🎉", 0, 8, 0, 'bold 100px Arial');
 createText("19", 7, 0, 0, 'bold 200px Verdana')
 
@@ -190,6 +191,7 @@ function createImage(path, w, h, x, y, z) {
     });
 }
 
+// Edit here ↓↓↓
 createImage('images/unknown.jpg', 15, 15, 30, 0, -10);
 createImage('images/unknown.jpg', 10, 10, -20, 10, -5);
 createImage('images/unknown.jpg', 5, 5, -10, 10, -20);
