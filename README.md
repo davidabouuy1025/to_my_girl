@@ -41,6 +41,7 @@ git clone https://github.com/davidabouuy1025/bday.git
 - Built using [Three.js](https://threejs.org/) and [Canvas-Confetti](https://www.npmjs.com/package/canvas-confetti)
 - Special thanks to:
   - @Contributor1 for `https://chatgpt.com/`
+  - @Contributor2 for confetti party effect `https://github.com/catdad/canvas-confetti.git` 
 
 ## License
 
