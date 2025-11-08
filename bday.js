@@ -42,7 +42,7 @@ function createText(text, x, y, z, style) {
 }
 // Edit here ↓↓↓
 createText("🎂 Happy Birthday 🎉", 0, 8, 0, 'bold 100px Arial');
-createText("19", 7, 0, 0, 'bold 200px Verdana')
+createText("19", 7, 0, 0, 'bold 250px Verdana')
 
 // --- Add Stars ---
 function createStar() {
@@ -183,6 +183,7 @@ createLoveInteractive();
 function createImage(path, w, h, x, y, z) {
     const loader = new THREE.TextureLoader();
     loader.load(path, (texture) => {
+        texture.encoding = THREE.sRGBEncoding;
         const geometry = new THREE.PlaneGeometry(w, h);
         const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
         const photo = new THREE.Mesh(geometry, material);
@@ -192,14 +193,16 @@ function createImage(path, w, h, x, y, z) {
 }
 
 // Edit here ↓↓↓
-createImage('images/unknown.jpg', 15, 15, 30, 0, -10);
-createImage('images/unknown.jpg', 10, 10, -20, 10, -5);
-createImage('images/unknown.jpg', 5, 5, -10, 10, -20);
-createImage('images/unknown.jpg', 10, 10, -30, -10, -5);
-createImage('images/unknown.jpg', 10, 10, 50, 20, -20);
-createImage('images/unknown.jpg', 7, 7, 50, 20, -20);
-createImage('images/unknown.jpg', 15, 15, 50, 20, -20);
-createImage('images/unknown.jpg', 300, 300, 0, 0, 200);
+createImage('personal_img/9.jpg', 15, 15, 42, -11, -10);
+createImage('personal_img/2.jpg', 22, 25, -25, 20, -25);
+createImage('personal_img/3.jpg', 30, 33, -40, -25, -40);
+createImage('personal_img/4.jpg', 12, 17, -37, -9, -5);
+createImage('personal_img/5.jpg', 30, 30, 60, 20, -20);
+createImage('personal_img/6.jpg', 25, 25, 33, 30, -30);
+createImage('personal_img/7.jpg', 20, 20, 45, 5, -40);
+createImage('personal_img/8.jpg', 30, 30, -75, 25, -40);
+createImage('personal_img/1.jpg', 35, 35, 40, -30, -40);
+createImage('personal_img/us.jpg', 600, 300, 10, 0, 250);
 
 //  ------------------------------------------------
 
