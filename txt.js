@@ -1,15 +1,11 @@
 // Edit here ↓↓↓
 const texts = [
     "> ...",
-    "> print(datetime.datetime.now())",
-    "> 2025-12-12T05:20:00.131400",
-    "> for friend in my_friends:",
-    ">      if friend['bday']:",
-    ">          print(`It's {friend['name']}'s bday!`)",
-    "> ...",
-    "> ...",
+    "> print(who_birthday == today)",
+    "> loading ...",
+    "> searching ...",
     "",
-    "It's WHO's bday!"
+    "It's KEXIN's bday!! 🎉🎉"
 ];
 
 const output = document.getElementById("output");
@@ -23,11 +19,15 @@ async function runFirstScript() {
     output.innerHTML = ""; // clear previous text
     for (let i = 0; i < texts.length; i++) {
         output.innerHTML += texts[i] + "<br>";
-        await wait(1000); // wait 1 second between lines
+        await wait(1500); // wait 1 second between lines
     }
 
     // Trigger confetti at the end
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    confetti({ particleCount: 250, spread: 100, origin: { y: 0.8 } });
+    await wait(500);
+    confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
+    await wait(400);
+    confetti({ particleCount: 150, spread: 50, origin: { y: 0.5 } });
     await wait(3000)
 
     window.location.href = "bday.html";

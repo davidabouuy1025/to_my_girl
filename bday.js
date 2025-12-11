@@ -43,8 +43,40 @@ function createText(text, x, y, z, style) {
 // Edit here ↓↓↓
 createText("🎂 Happy Birthday 🎉", 0, 8, 0, 'bold 100px Arial');
 createText("19", 7, 0, 0, 'bold 250px Verdana')
+createText("Click Me", -7, 1, 1, 'bold italic 50px Verdana')
+createText("Click Me", 0, -2, 7, 'bold italic 50px Verdana')
 
-// --- Add Stars ---
+
+// --- Load Sound ---
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// List of audio files
+const audioFiles = [
+    'audio/audio1.mp3',
+    'audio/audio2.mp3',
+    'audio/audio3.mp3',
+    'audio/audio4.mp3'
+];
+
+const audioFile = [
+    'audio/audio10.mp3',
+    'audio/audio11.mp3'
+]
+
+// Preload sounds
+const heartAudioList = audioFile.map(src => {
+    const a = new Audio(src);
+    a.volume = 1;
+    return a;
+});
+
+const audioList = audioFiles.map(src => {
+    const a = new Audio(src);
+    a.volume = 1;
+    return a;
+});
+
 function createStar() {
     const geometry = new THREE.SphereGeometry(0.1, 12, 12);
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -55,15 +87,17 @@ function createStar() {
 }
 Array(3500).fill().forEach(createStar);
 
+
+const cakeParts = [];
+
 // --- Add Cake ---
 function createCake(scene) {
-    const layerHeights = [2.5, 2, 1.5, 0.8];       // height of each layer
-    const layerRadii = [4.5, 3.5, 2.5, 1.8];           // radius of each layer
-    const layerColors = [0xff9999, 0xffcc99, 0x99ccff, 0xcc99ff]; // cake layer colors
-    let currentY = -5; // Start stacking from Y=0
-    let currentZ = 2
+    const layerHeights = [2.5, 2, 1.5, 0.8];
+    const layerRadii = [4.5, 3.5, 2.5, 1.8];
+    const layerColors = [0xff9999, 0xffcc99, 0x99ccff, 0xcc99ff];
+    let currentY = -5;
+    let currentZ = 2;
 
-    // --- Create cake layers ---
     for (let i = 0; i < 4; i++) {
         const geometry = new THREE.CylinderGeometry(layerRadii[i], layerRadii[i], layerHeights[i], 64);
         const material = new THREE.MeshStandardMaterial({
@@ -73,55 +107,49 @@ function createCake(scene) {
             metalness: 0.2
         });
         const layer = new THREE.Mesh(geometry, material);
-
-        // Position layer
-        currentY += layerHeights[i] / 2; // move up by half the layer height
+        currentY += layerHeights[i] / 2;
         layer.position.set(0, currentY, currentZ);
         scene.add(layer);
+        cakeParts.push(layer);
 
-        // Simple stripe decoration
         const stripeGeo = new THREE.TorusGeometry(layerRadii[i] * 1, 0.05, 8, 100);
         const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff0f0, emissiveIntensity: 0.2 });
         const stripe = new THREE.Mesh(stripeGeo, stripeMat);
         stripe.rotation.x = Math.PI / 2;
-        stripe.position.set(0, currentY + layerHeights[i] / 2 - 0.05, currentZ + 0.1); // slightly above layer
+        stripe.position.set(0, currentY + layerHeights[i] / 2 - 0.05, currentZ + 0.1);
         scene.add(stripe);
 
-        currentY += layerHeights[i] / 2; // prepare Y for next layer
+        currentY += layerHeights[i] / 2;
     }
 
-    // --- Candles ---
     const candleGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.8, 16);
     const candleMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xffff44, emissiveIntensity: 0.6 });
-    const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00 }); // always visible
+    const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
 
-    // Top layer info
     const topLayerRadius = layerRadii[layerRadii.length - 1];
     const topLayerHeight = layerHeights[layerHeights.length - 1];
-    const topY = currentY - topLayerHeight / 2 + 0.4; // candles slightly above top layer
+    const topY = currentY - topLayerHeight / 2 + 0.4;
 
     for (let i = 0; i < 5; i++) {
         const angle = (i / 5) * Math.PI * 2;
         const radius = topLayerRadius * 0.7;
 
-        // Candle
         const candle = new THREE.Mesh(candleGeometry, candleMaterial);
         candle.position.set(Math.cos(angle) * radius, topY, currentZ + Math.sin(angle) * radius);
         scene.add(candle);
+        cakeParts.push(candle);
 
-        // Flame
         const flameGeometry = new THREE.SphereGeometry(0.12, 16, 16);
         const flame = new THREE.Mesh(flameGeometry, flameMaterial);
         flame.position.set(Math.cos(angle) * radius, topY + 0.35, currentZ + Math.sin(angle) * radius);
         scene.add(flame);
 
-        // Glow
         const glow = new THREE.PointLight(0xffaa00, 0.8, 3);
         glow.position.copy(flame.position);
         scene.add(glow);
     }
 }
-createCake(scene)
+createCake(scene);
 
 // --- Add love ---
 let heartMesh;
@@ -262,6 +290,60 @@ document.addEventListener('wheel', (event) => {
     if (!isDragging) autoRotate = true;
 });
 
+// --- Detect clicks on cake ---
+window.addEventListener('click', (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(cakeParts);
+
+    if (intersects.length > 0) {
+        // pick random sound
+        const randomIndex = Math.floor(Math.random() * audioList.length);
+        const sound = audioList[randomIndex];
+
+        // stop any currently playing sounds
+        audioList.forEach(a => { a.pause(); a.currentTime = 0; });
+
+        // play new one
+        sound.play();
+
+        // visual feedback
+        const obj = intersects[0].object;
+        obj.material.emissive.set(0xff0000);
+        setTimeout(() => obj.material.emissive.set(0x000000), 400);
+    }
+});
+
+// --- Detect clicks on heart ---
+const raycasterHeart = new THREE.Raycaster();
+const mouseHeart = new THREE.Vector2();
+
+window.addEventListener('click', (event) => {
+    mouseHeart.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouseHeart.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycasterHeart.setFromCamera(mouseHeart, camera);
+    const intersects = raycasterHeart.intersectObject(heartMesh);
+
+    if (intersects.length > 0) {
+        // pick random sound
+        const randomIndex = Math.floor(Math.random() * heartAudioList.length);
+        const sound = heartAudioList[randomIndex];
+
+        // stop any currently playing sounds
+        heartAudioList.forEach(a => { a.pause(); a.currentTime = 0; });
+
+        // play new one
+        sound.play();
+
+        // Heart glow + spin effect
+        spinning = true;
+        spinTime = 0;
+        heartMesh.material.emissive.set(0xff0000);
+    }
+});
 
 // --- Animation loop ---
 function animate() {
@@ -275,7 +357,7 @@ function animate() {
     // --- Drag / momentum ---
     if (isDragging || Math.abs(rotationSpeed) > 0.0001) {
         scene.rotation.y += rotationSpeed;
-        rotationSpeed *= 0.95; // damping
+        rotationSpeed *= 0.25; // damping
     }
 
     // Heart spinning
@@ -286,6 +368,7 @@ function animate() {
             spinning = false;
             heartMesh.material.emissive.set(0xff0000);
         }
+
     }
 
     renderer.render(scene, camera);
